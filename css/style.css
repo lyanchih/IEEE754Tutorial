@@ -156,7 +156,8 @@ sup, sub { line-height: 0; }
 .lead { font-size: 1.1rem; color: var(--ink-2); max-width: 680px; margin: 0 auto 24px; }
 .hero-bits { margin: 20px auto 6px; max-width: 760px; }
 .hero-bits .bitview { justify-content: center; --bw: 34px; }
-.hero-caption { font-family: var(--mono); color: var(--ink-2); min-height: 1.8em; margin: 4px 0 24px; }
+/* 固定兩行高度：內容每 2.6 秒會變，高度不固定會讓整頁上下跳 */
+.hero-caption { font-family: var(--mono); color: var(--ink-2); min-height: 3.6em; margin: 4px 0 24px; }
 .hero-cards { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-bottom: 28px; }
 .mini-card {
   background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);

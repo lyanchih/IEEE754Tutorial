@@ -351,7 +351,10 @@
       i++;
     }
     step();
-    setInterval(step, 2600);
+    // 只在 hero 看得到、且分頁在前景時才播放：畫面外的變動在 iOS（沒有 scroll anchoring）會讓頁面跳動
+    let visible = true;
+    new IntersectionObserver((es) => { visible = es[0].isIntersecting; }).observe($('#hero-bits'));
+    setInterval(() => { if (visible && !document.hidden) step(); }, 2600);
   }
 
   /* =====================================================
@@ -1456,12 +1459,19 @@
       links.forEach((a) => a.classList.toggle('done', visited.has(a.getAttribute('href').slice(1))));
       $('#progress-list').innerHTML = chapters.map((c, i) => `<span class="${visited.has(c.id) ? 'done' : ''}">${visited.has(c.id) ? '✓ ' : ''}${i + 1} ${NAMES[i]}</span>`).join('');
     }
+    // 只水平捲動導覽列本身；不用 scrollIntoView，因為它會連帶接管整頁捲動，打斷手機的慣性滑動
+    const nav = $('.topnav');
+    function centerNavLink(a) {
+      const nr = nav.getBoundingClientRect(), ar = a.getBoundingClientRect();
+      if (ar.left >= nr.left && ar.right <= nr.right) return;
+      nav.scrollLeft += ar.left - nr.left - (nr.width - ar.width) / 2;
+    }
     const io = new IntersectionObserver((entries) => {
       entries.forEach((en) => {
         if (en.isIntersecting) {
           links.forEach((a) => a.classList.toggle('active', a.getAttribute('href') === '#' + en.target.id));
           const act = links.find((a) => a.classList.contains('active'));
-          if (act) act.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+          if (act) centerNavLink(act);
           if (!visited.has(en.target.id)) { visited.add(en.target.id); store.set('visited', [...visited]); renderProgress(); }
         }
       });
